@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todoo-List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Styles */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;  
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(90deg, #F5EFFF, #CDC1FF);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        * {
+            font-family: "Montserrat", sans-serif;
+            box-sizing: border-box;
+        }
+
+        .hoverable {
+            transition: all 50ms ease-in;
+        }
+
+        .hoverable:hover {
+            transform: scale(1.2);
+        }
+
+        .container {
+            background-color: #fff;
+            width: 700px;
+            height: 100%;
+            max-height: 800px;
+            max-width: 90%;
+            padding: 0 10px;
+            padding-bottom: 50px;
+            border-radius: 20px;
+            box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.20);
+            margin: 50px 0;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #text-header {
+            padding: 10px 0px;
+            width: 80%;
+            border-bottom: solid 2px rgba(0, 0, 0, 0.20);
+            font-size: large;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        } 
+
+        .input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 80%;
+            margin: 1.3rem 0;
+        }
+
+        #todo-input {
+            height: 5rem;
+            border: solid 3px rgb(186, 200, 218);
+            width: 60%;
+            max-width: 325px;
+            height: 5rem;
+            font-size: 16px;
+            border-radius: 15px 0px 0px 15px;
+            padding: 10px;
+            background-color: rgb(239, 245, 252);
+            transition: border-color 100ms ease-in;
+        }
+
+        #todo-input:focus {
+            border-color: rgb(121, 184, 255);
+            outline: unset;
+        }
+
+        #add-todo-btn {
+            height: 100%;
+            width: 35%;;
+            max-width: 50px;
+            background-color: #A294F9;
+            color: #F5EFFF;
+            font-size: 14px;
+            padding: 0px 10px;
+            border-radius: 0px 15px 15px 0px;
+            border: solid 2px #7a65ff;
+            font-weight: bold;
+            transition: all 100ms ease;
+        }
+
+        #add-todo-button:hover{
+            background-color: #9585ff;
+        }
+
+        #warning {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+            background-color: #FF8A8A;
+            padding: 0.3rem;
+            font-weight: 700;
+            border-radius: 10px;
+            max-width: 300px;
+            width: 60%;
+            font-size: 0.8em;
+            overflow: hidden;
+        }
+
+        #warning-container {
+            display: flex;
+            justify-content: center;
+            width: 90%;
+        }
+
+        #warning svg {
+            flex-shrink: 0;
+        }
+
+        .item-controls {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            width: 90%;
+            max-width: 200px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .item-controls button {
+            border-radius: 10px;
+            border: solid 1px rgb(239, 245, 252);
+            background-color: rgb(239, 245, 252);
+            transition: 100ms ease all;
+            max-width: 60px;
+            padding: 5px;
+            width: 100%;
+        }
+
+        .item-controls button:hover {
+            background-color: rgb(225, 238, 252);
+            transform: scale(1.1);
+        }
+
+        .item-controls input[type='checkbox'] {
+            border-radius: 10px;
+            height: 20px;
+            width: 20px;
+        }
+
+        #todo-container {
+            margin-top: 0.8rem;
+            width: 80%;
+            max-width: 600px;
+            height: 100%;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            gap: 15px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        .todo-textarea {
+            margin-top: 1rem;
+            all: unset;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            font-weight: 500;
+            min-height: 1rem;
+            width: 100%;
+            overflow-wrap: break-word;
+            overflow: hidden;
+            pointer-events: auto;
+            cursor: pointer; 
+        }
+
+        .uneditable {
+            background-color: unset;
+            border-radius: unset;
+        }
+
+        .editable {
+            background-color: #ffffff;
+            border-radius: 5px;
+        }
+
+        .item {
+            padding: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 500px;
+            gap: 20px;
+            transition: all ease-in 200ms;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .unchecked {
+            background-color: rgb(204, 196, 255);
+        }
+
+        .unchecked:hover {
+            box-shadow: 0px 5px 10px rgb(199, 191, 255);
+            background-color: rgb(195, 183, 250);
+        }
+
+        .checked {
+            background-color: #b5ff95;
+        }
+
+        .checked:hover {
+            background-color: #9feb7e;
+            box-shadow: 0px 5px 10px #9ff37c;
+        }
+
+        /* Info Page Styles */
+        #info-page {
+            display: none;
+            text-align: center;
+        }
+
+        #info-page h1 {
+            margin-bottom: 1rem;
+        }
+
+        #info-page textarea {
+            width: 80%;
+            max-width: 600px;
+            height: 300px;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 2px solid #A294F9;
+            margin-bottom: 1rem;
+        }
+
+        #info-page button {
+            background-color: #A294F9;
+            color: #F5EFFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 100ms ease;
+        }
+
+        #info-page button:hover {
+            background-color: #9585ff;
+        }
+
+        /* Members Page Styles */
+        #members-page {
+            display: none;
+            text-align: center;
+        }
+
+        .group-photo {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .members-list {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Page -->
+    <div id="home-page" style="text-align: center;">
+        <h1>Welcome to Todoo-List</h1>
+        <p>A simple and efficient way to manage your tasks.</p>
+        <button onclick="navigateToTodoList()">Go to Todo List</button>
+        <button onclick="navigateToInfoPage()">Go to Info Page</button>
+        <button onclick="navigateToMembersPage()">Go to Members Page</button>
+    </div>
+
+    <!-- Todo List Page -->
+    <div id="todo-list-page" style="display: none;">
+        <div class="container" id="container">
+            <div id="text-header">
+                <h1>Todoo-List
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-clipboard-check" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                    </svg>
+                </h1>
+                <p>A Simple Website For Tracking Your Todo's.</p>
+            </div>
+
+            <div id="warning-container"></div>
+
+            <div class="input-container">
+                <textarea id='todo-input' type='text' placeholder="Type Your Todo"></textarea>
+                <button id="add-todo-btn" onclick='todoInputEvent(null)'>
+                    Add 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="hoverable bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="todo-container"></div>
+        </div>
+    </div>
+
+    <!-- Info Page -->
+    <div id="info-page">
+        <h1>Info Page</h1>
+        <textarea id="info-textarea" placeholder="Write something about yourself or this app..."></textarea>
+        <button onclick="saveInfo()">Save</button>
+        <button onclick="navigateToTodoList()">Back to Todo List</button>
+    </div>
+
+    <!-- Members Page -->
+    <div id="members-page" style="display: none;">
+        <h1>Members</h1>
+        <img src="download.jpg" alt="Group Photo" class="group-photo">
+        <div class="members-list">
+            <p>Ylaiza Mae Godinez</p>
+            <p>Sabrina Casamayor</p>
+            <p>Rayne Smiraln Diaz</p>
+            <p>Dane Thea Kylee Ocampo</p>
+            <p>Cjay G Tio</p>
+            <p>Henry Euver Henoguin</p>
+            <p>John Ryver Henoguin</p>
+        </div>
+        <button onclick="navigateToTodoList()">Back to Todo List</button>
+    </div>
+
+    <script>
+        // JavaScript Code
+        function navigateToTodoList() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('todo-list-page').style.display = 'block';
+            document.getElementById('info-page').style.display = 'none';
+            document.getElementById('members-page').style.display = 'none';
+        }
+
+        function navigateToInfoPage() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('todo-list-page').style.display = 'none';
+            document.getElementById('info-page').style.display = 'block';
+            document.getElementById('members-page').style.display = 'none';
+            loadInfo();
+        }
+
+        function navigateToMembersPage() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('todo-list-page').style.display = 'none';
+            document.getElementById('info-page').style.display = 'none';
+            document.getElementById('members-page').style.display = 'block';
+        }
+
+        function saveInfo() {
+            const infoText = document.getElementById('info-textarea').value;
+            localStorage.setItem('infoText', infoText);
+            alert('Info saved!');
+        }
+
+        function loadInfo() {
+            const savedInfo = localStorage.getItem('infoText');
+            if (savedInfo) {
+                document.getElementById('info-textarea').value = savedInfo;
+            }
+        }
+
+        function addTodoItem(todoName) {
+            todoName = todoName.trim();
+
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item', 'unchecked');
+            itemDiv.id = "item" + String(getTodoAmount());
+
+            const itemControls =  document.createElement('div');
+            itemControls.classList.add('item-controls');
+
+            const itemCheckBox = document.createElement('input');
+            itemCheckBox.type = 'checkbox';
+            itemCheckBox.id = "checkbox" + String(getTodoAmount());
+            itemCheckBox.addEventListener('click', function(event) {
+                detectItemStatus(this);
+            });
+
+            const editButton = document.createElement('button');
+            editButton.classList.add('edit-button');
+            editButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                const textarea = this.parentElement.parentElement.querySelector('.todo-textarea');
+                textarea.classList.replace('uneditable', 'editable');
+                textarea.readOnly = false;
+                textarea.focus(); 
+            });
+            editButton.innerText = 'Edit';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('delete-button');
+            deleteButton.innerText = 'Delete';
+            deleteButton.addEventListener('click', function(event) {
+                this.parentElement.parentElement.remove();
+            });
+
+            let controls = [itemCheckBox, editButton, deleteButton];
+            for (let i = 0; i < controls.length; i++) {
+                itemControls.appendChild(controls[i]);
+            }
+
+            itemDiv.appendChild(itemControls);
+
+            const textarea = document.createElement('textarea');
+            textarea.classList.add('todo-textarea', 'uneditable');
+            textarea.readOnly = true;
+            textarea.spellcheck = false;
+
+            textarea.addEventListener('input', function(event) {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+                if (event.key == 'Enter') this.classList.replace('editable', 'uneditable');
+            });
+
+            textarea.addEventListener('click', function(event) {
+                if (this.classList.contains('uneditable')) {
+                    event.preventDefault();
+                    this.readOnly = true;
+                }
+                itemCheckBox.click();
+            });
+
+            textarea.addEventListener('blur', function(event) {
+                this.classList.replace('editable', 'uneditable');
+                this.readOnly = false;
+            });
+
+            textarea.appendChild(document.createTextNode(todoInput.value));
+            itemDiv.appendChild(textarea);
+
+            addTodoItemToList(itemDiv);
+        }
+
+        function validateInput(todoName) {
+            let cleanTodoName = todoName.trim();
+
+            if (cleanTodoName == '') {
+                warnUser("Please enter something!");
+                return false;
+            }
+
+            cleanTodoName = cleanTodoName.toLowerCase();
+            const todoTextAreas = document.querySelectorAll('.todo-textarea');
+
+            for (let i = 0; i < todoTextAreas.length; i++) {
+                const todoText = todoTextAreas[i].value.trim().toLowerCase();
+                if (cleanTodoName == todoText) {
+                    warnUser("No Duplicates allowed!");
+                    return false;
+                }
+            }
+
+            clearWarnings();
+            return true;
+        }
+
+        function todoInputEvent(event) {
+            if (event != null) event.preventDefault();
+            const todoName = todoInput.value;
+
+            if (!validateInput(todoName)) {
+                todoInput.value = todoInput.value.trim();
+                return;
+            }
+
+            addTodoItem(todoName);
+            todoInput.value = '';
+        }
+
+        function getTodoAmount() {
+            const todoContainer = document.getElementById('todo-container');
+            const last_child = todoContainer.lastChild;
+
+            if (last_child == null) return 0;
+            else if (last_child.id == null) return 0;        
+
+            const numbers = last_child.id.match(/\d+/g);
+            return parseInt(numbers[0]) + 1; 
+        }
+
+        function detectItemStatus(itemCheckbox) {
+            const itemDiv = itemCheckbox.parentElement.parentElement;
+            const item_checked = itemCheckbox.checked;
+
+            if (item_checked) {
+                itemDiv.classList.value = 'item checked';
+                placeTodoAtEnd(itemDiv);
+            }
+            else itemDiv.classList.value = 'item unchecked';
+            
+            if (checkFinishedAll()) {
+                const jsConfetti = new JSConfetti();
+                jsConfetti.addConfetti();
+            }
+        }
+
+        function addTodoItemToList(todoItem) {
+            const todoContainer = document.getElementById('todo-container');
+            todoContainer.appendChild(todoItem);
+            todoContainer.scrollTo({top: 0, left: 0, behavior: "smooth" });
+
+            todoItem.addEventListener('click', function(event) {
+                if (event.target === event.currentTarget) {
+                    const input = todoItem.querySelector('input');
+                    input.click();
+                }
+            });
+
+            const first_element = todoContainer.firstChild;
+            if (first_element == null) todoContainer.appendChild(todoItem);
+            else todoContainer.insertBefore(todoItem, first_element);
+        }
+
+        function warnUser(text) {
+            clearWarnings();
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'warning';
+            warningDiv.appendChild(document.createTextNode(text));
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                        </svg>`;
+
+            warningDiv.innerHTML += svg;
+
+            const svgElement = warningDiv.querySelector("svg");
+            svgElement.addEventListener("click", function (event) {
+                warningDiv.remove();
+            });
+
+            document.getElementById('warning-container').appendChild(warningDiv);
+        }
+
+        function clearWarnings() {
+            const warningContainer = document.getElementById('warning-container');
+            while (warningContainer.firstChild) warningContainer.removeChild(warningContainer.firstChild);
+        }
+
+        function placeTodoAtEnd(todoItem) {
+            const todo_container = document.getElementById('todo-container');
+            todo_container.appendChild(todoItem);
+        }
+
+        function checkFinishedAll() {
+            const todo_container = document.getElementById('todo-container');
+
+            for (let todoItem of todo_container.children) {
+                if (todoItem.classList.contains('unchecked')) return false;
+            }
+
+            return true;
+        }
+
+        const todoInput = document.getElementById("todo-input");
+        var todoItems = [];
+
+        todoInput.addEventListener('keydown', function(event) {
+            if (event.key == 'Enter') todoInputEvent(event);
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+</body>
+</html>
